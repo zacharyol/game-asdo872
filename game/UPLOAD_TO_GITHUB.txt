@@ -1,0 +1,20 @@
+Upload this `game/` folder to your GitHub repo.
+
+After you push it, your direct jsDelivr game URL will be:
+https://cdn.jsdelivr.net/gh/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME@main/game/index.html
+
+Use that URL in an iframe on your own website.
+
+Example iframe:
+<iframe
+  src="https://cdn.jsdelivr.net/gh/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME@main/game/index.html"
+  width="1280"
+  height="720"
+  style="border:0;"
+  allowfullscreen
+></iframe>
+
+Important:
+- `game/Build/WebGL.data.br` is not currently in this folder.
+- Most Unity WebGL builds need that file to run.
+- If the game does not load after upload, re-export or copy the missing `WebGL.data.br` into `game/Build/`.

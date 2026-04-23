@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Scritchy Scratchy</title>
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      #unity-container {
+        position: fixed;
+        inset: 0;
+      }
+
+      #unity-canvas {
+        width: 100%;
+        height: 100%;
+      }
+
+      #unity-footer {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        z-index: 10;
+      }
+
+      #unity-build-title {
+        float: none;
+        margin-right: 0;
+        padding: 6px 10px;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.45);
+        border-radius: 8px;
+      }
+
+      #unity-logo-title-footer {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="unity-container" class="unity-desktop">
+      <canvas id="unity-canvas" tabindex="-1"></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+      </div>
+      <div id="unity-warning"></div>
+      <div id="unity-footer">
+        <div id="unity-build-title">Scritchy Scratchy</div>
+      </div>
+    </div>
+
+    <script>
+      const canvas = document.querySelector("#unity-canvas");
+
+      function unityShowBanner(message, type) {
+        const warningBanner = document.querySelector("#unity-warning");
+
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? "block" : "none";
+        }
+
+        const div = document.createElement("div");
+        div.textContent = message;
+        warningBanner.appendChild(div);
+
+        if (type === "error") {
+          div.style = "background: red; padding: 10px;";
+        } else {
+          if (type === "warning") {
+            div.style = "background: yellow; padding: 10px;";
+          }
+          setTimeout(() => {
+            if (div.parentNode === warningBanner) {
+              warningBanner.removeChild(div);
+              updateBannerVisibility();
+            }
+          }, 5000);
+        }
+
+        updateBannerVisibility();
+      }
+
+      const buildUrl = "Build";
+      const loaderUrl = `${buildUrl}/WebGL.loader.js`;
+      const config = {
+        arguments: [],
+        dataUrl: `${buildUrl}/WebGL.data.br`,
+        frameworkUrl: `${buildUrl}/WebGL.framework.js.br`,
+        codeUrl: `${buildUrl}/WebGL.wasm.br`,
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Lunch Money Games",
+        productName: "Scritchy Scratchy",
+        productVersion: "0.8",
+        showBanner: unityShowBanner,
+      };
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        const meta = document.createElement("meta");
+        meta.name = "viewport";
+        meta.content =
+          "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
+        document.head.appendChild(meta);
+        document.querySelector("#unity-container").className = "unity-mobile";
+        canvas.className = "unity-mobile";
+      }
+
+      document.querySelector("#unity-loading-bar").style.display = "block";
+
+      const script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          document.querySelector("#unity-progress-bar-full").style.width = `${100 * progress}%`;
+        })
+          .then(() => {
+            document.querySelector("#unity-loading-bar").style.display = "none";
+          })
+          .catch((message) => {
+            alert(message);
+          });
+      };
+
+      document.body.appendChild(script);
+    </script>
+  </body>
+</html>
